@@ -1,61 +1,37 @@
 (function () {
-
     'use strict';
-
     angular.module('LunchCheck', [])
     .controller('LunchCheckController', LunchCheckController);
 
     LunchCheckController.$inject = ['$scope'];    
     function LunchCheckController ($scope) {
-        $scope.lunch_input = "";
-        $scope.message = "";
-        $scope.message_color = {};
-        $scope.lunch_input_color = {};
-
-
+        $scope.dishes_input = "";
+        $scope.displaymessage = "";
+       
         $scope.checkLunch = function () {
-            if(!$scope.lunch_input.length){
-                change_property("Please enter data first", "red", "red");
-                return;
-            }
-            
-            var count = get_count();
-            console.log("count is : " + count);
-            if(!count) {
-                change_property("Please enter data first", "red", "red");
-            }else if(count>3){
-                change_property("Too much!", "green", "green");
+         var dishescount= getCountDishes($scope.dishes_input);
+         if(!dishescount){
+            $scope.displaymessage="Please enter data first";            
+         }else if(dishescount>3){
+            $scope.displaymessage="Too much!";
+         }else{
+            $scope.displaymessage="Enjoy!";
+         }
+        };
+    }
+    getCountDishes.$inject = ['$scope.dishes_input'];
+    function getCountDishes($dishes_input)
+    {
+        var $items = $dishes_input.split(",");
+        var i=0;
+        while ( i<$items.length){
+            if($items[i]==""){
+                $items.splice(i,1);
             }else{
-                change_property("Enjoy!", "green", "green");
+                ++i;
             }
         }
-
-        change_property.$inject = ['$message', '$color', '$border_color']
-        function change_property ($message, $color, $border_color) {
-            $scope.message = $message;
-            $scope.message_color.style = {"color":$color};
-            $scope.lunch_input_color.style = {"border-color":$border_color};    
-        }
-
-        function get_count () {
-            var items = $scope.lunch_input.split(",");
-            var count = remove_empty_entries(items);
-            return count;
-        }
-
-        remove_empty_entries.$inject = ['$items'];
-        function remove_empty_entries ($items) {
-            var i=0;
-            while(i<$items.length){
-                if($items[i]==""){
-                    $items.splice(i, 1);
-                } else {
-                    ++i;
-                }
-            }
-            return $items.length;
-        }
-
-    };
+        return $items.length;
+    }
 
 })();
